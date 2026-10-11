@@ -12,7 +12,7 @@ morph into anything, and time is something you script.
 
 | | manim | anim-lib |
 | --- | --- | --- |
-| Install | LaTeX, dvisvgm, Pango, an ffmpeg binary, a GPU stack | `pip install` only: Skia, Typst and PyAV ship as wheels |
+| Install | LaTeX, dvisvgm, Pango, an ffmpeg binary, a GPU stack | `pip install`: Skia, Typst and PyAV ship as wheels (see the Linux note below) |
 | Time | `play()` mutates live objects frame by frame | `play()` will record into a timeline you can sample at any t |
 | Config and style | Globals read at import (it even parses `sys.argv`) | Explicit `Camera`, and a `Theme` from phase 2 |
 | Curves | Quadratic Béziers | Cubic Béziers, the native form of SVG, fonts and Skia |
@@ -31,10 +31,24 @@ uv run python examples/phase0_morph.py      # writes renders/phase0_morph.mp4
 ```
 
 The example renders 3 seconds of a circle morphing into a square while an equation writes
-itself in, at 1080p30, in about 3 seconds on a laptop CPU.
+itself in, at 1080p30, in a few seconds on a CPU.
+
+**Linux note:** the `skia-python` wheel links against the system's `libGL` and `libEGL`. Every
+desktop install has them; minimal servers, containers and CI runners may not:
+`sudo apt-get install libgl1 libegl1` (Debian/Ubuntu). macOS and Windows need nothing extra.
 
 ```python
-from animlib import Camera, DrawItem, SkiaRenderer, Style, VideoWriter, easing, math, morph, shapes
+from animlib import (
+    Camera,
+    DrawItem,
+    SkiaRenderer,
+    Style,
+    VideoWriter,
+    easing,
+    math,
+    morph,
+    shapes,
+)
 
 camera = Camera.at("1080p")
 renderer = SkiaRenderer()
@@ -45,7 +59,9 @@ with VideoWriter("out.mp4", camera.width_px, camera.height_px, fps=30) as video:
     for i in range(60):
         alpha = easing.smooth(i / 59)
         items = [DrawItem(m.at(alpha), Style.of(fill="#58C4DD", stroke="#FFFFFF"))]
-        items += [DrawItem(g.shift(0, 2.75), Style.of(fill="#FFFFFF", stroke=None)) for g in equation]
+        items += [
+            DrawItem(g.shift(0, 2.75), Style.of(fill="#FFFFFF", stroke=None)) for g in equation
+        ]
         video.write(renderer.render(items, camera))
 ```
 

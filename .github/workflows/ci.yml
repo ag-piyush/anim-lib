@@ -36,6 +36,9 @@ jobs:
             python-version: "3.13"
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Install the GL libraries skia-python links against
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libgl1 libegl1
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v9.0.0
         with:

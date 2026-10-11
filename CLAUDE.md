@@ -17,5 +17,7 @@ Python library for programmatic animations, modelled on 3b1b/manim. Design and r
 - `Path` and other values are immutable: operations return new objects. Keep it that way;
   sampling the timeline at t must never depend on what was sampled before.
 - `core` and `geometry` must not import from `render`, `text` or `output`.
-- Runtime dependencies must ship wheels for Linux, macOS and Windows. No system tools.
+- Runtime dependencies must ship wheels for Linux, macOS and Windows. No system tools. The one
+  known exception: on Linux, `skia-python` needs the system `libGL` and `libEGL`
+  (`apt-get install libgl1 libegl1` on bare servers and CI).
 - No colours, sizes or durations hard-coded in components; they come from the Theme (phase 2).
