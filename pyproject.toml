@@ -1,0 +1,81 @@
+[project]
+name = "anim-lib"
+version = "0.0.1"
+description = "A Python library for programmatic, explanatory animations, in the spirit of manim."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Piyush Agarwal" }]
+keywords = ["animation", "manim", "vector graphics", "video", "math"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Multimedia :: Video",
+    "Typing :: Typed",
+]
+# Every runtime dependency ships binary wheels for Linux, macOS and Windows:
+# no LaTeX, no system ffmpeg, no GPU stack.
+dependencies = [
+    "numpy>=2.0",
+    "skia-python>=138.0",  # rasteriser
+    "typst>=0.13",         # text and maths -> SVG, no TeX install
+    "av>=14.0",            # video encoding, FFmpeg bundled in the wheel
+    "svgelements>=1.9",    # SVG -> path segments
+]
+
+[project.urls]
+Repository = "https://github.com/ag-piyush/anim-lib"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+    "mypy>=1.11",
+]
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/animlib"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests", "examples"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # isort
+    "B",        # bugbear
+    "UP",       # pyupgrade
+    "SIM",      # simplify
+    "NPY",      # numpy-specific
+    "RUF",
+]
+ignore = [
+    "RUF001", "RUF002", "RUF003",  # allow unicode such as α and → in strings and comments
+]
+
+[tool.mypy]
+python_version = "3.11"
+packages = ["animlib"]
+mypy_path = "src"
+strict = true
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+# Third-party packages without type information
+module = ["skia", "skia.*", "svgelements", "svgelements.*", "typst", "typst.*"]
+ignore_missing_imports = true
